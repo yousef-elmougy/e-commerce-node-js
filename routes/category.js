@@ -4,12 +4,22 @@ const {
   getCategories,
   getCategoryById,
   updateCategoryById,
-  deleteCategoryById
+  deleteCategoryById,
 } = require("../controllers/category");
+
+const {
+  validateMongoId,
+  notEmpty,
+  lengthRange,
+} = require("../middleware/validatorMiddleware");
 const router = express.Router();
 
-router.route("/").post(createCategory).get(getCategories);
+router
+  .route("/")
+  .post([notEmpty("name"), lengthRange("name", 3, 32)], createCategory)
+  .get(getCategories);
 
+router.param("id", validateMongoId("id"));
 router
   .route("/:id")
   .get(getCategoryById)
