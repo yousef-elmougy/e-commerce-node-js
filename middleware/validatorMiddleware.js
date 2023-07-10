@@ -1,9 +1,8 @@
 const validateMongoId = (paramName) => (req, res, next) => {
-  const { params } = req;
-  const id = params[paramName];
-
+  const id = req.params[paramName]||req.body[paramName];
+  
   if (!id.match(/^[0-9a-fA-F]{24}$/i)) {
-    const message = `Invalid ${paramName} formate`;
+    const message = `Invalid ${paramName} ID formate`;
     return res.status(400).json({ error: { value: id, message } });
   }
 

@@ -12,7 +12,12 @@ const {
   notEmpty,
   lengthRange,
 } = require("../middleware/validatorMiddleware");
+
+const subCategoryRouter =require("./subCategory");
+
 const router = express.Router();
+
+router.use("/:categoryId/subCategories",subCategoryRouter);
 
 router
   .route("/")

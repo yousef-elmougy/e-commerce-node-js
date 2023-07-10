@@ -3,8 +3,11 @@ const express = require("express");
 const morgan = require("morgan");
 const dbConnection = require("./config/dbConnection");
 const categoryRouter = require("./routes/category");
+const subCategoryRouter = require("./routes/subCategory");
+const brandRouter = require("./routes/brand");
 const ApiError = require("./utils/apiError");
 const globalError = require("./middleware/errorMiddleware");
+
 const app = express();
 
 console.log(`environment --->> ${process.env.NODE_ENV}`);
@@ -15,6 +18,8 @@ app.use(express.json());
 
 // Routes
 app.use("/api/v1/categories", categoryRouter);
+app.use("/api/v1/subCategories", subCategoryRouter);
+app.use("/api/v1/brands", brandRouter);
 
 app.all("*", (req, res, next) =>
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400))
@@ -36,5 +41,5 @@ dbConnection();
 
 process.on("unhandledRejection", (err) => {
   console.log(`unhandledRejection Errors: ${err.name} | ${err.message}`);
-  server.close((err) => process.exit(1));
+  server.close(() => process.exit(1));
 });
