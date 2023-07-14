@@ -4,10 +4,10 @@ const brandSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "name is required"],
-      minLength: [3, "name is Too Short"],
-      maxLength: [32, "name is Too long"],
-      unique: [true, "name must be unique"],
+      required: [true, "brand name is required"],
+      minLength: [3, "brand name is Too Short"],
+      maxLength: [32, "brand name is Too long"],
+      unique: [true, "brand name must be unique"],
     },
     slug: {
       type: String,
@@ -17,6 +17,8 @@ const brandSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+brandSchema.methods.toString = () => "Brand";
 
 const Brand = mongoose.model("Brand", brandSchema);
 

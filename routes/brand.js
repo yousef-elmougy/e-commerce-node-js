@@ -9,17 +9,15 @@ const {
 
 const {
   validateMongoId,
-  notEmpty,
+  required,
   lengthRange,
-} = require("../middleware/validatorMiddleware");
-
+} = require("../middleware/globalValidatorMiddleware");
 
 const router = express.Router();
 
-
 router
   .route("/")
-  .post(notEmpty("name"), lengthRange("name", 3, 32), createBrand)
+  .post(required("name"), lengthRange("name", 3, 32), createBrand)
   .get(getBrands);
 
 router.param("id", validateMongoId("id"));

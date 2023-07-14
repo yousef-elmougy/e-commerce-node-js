@@ -5,10 +5,10 @@ const subCategorySchema = mongoose.Schema(
     name: {
       type: String,
       trim: true,
-      required: [true, "name is required"],
-      minLength: [2, "name is Too Short"],
-      maxLength: [32, "name is Too long"],
-      unique: [true, "name must be unique"],
+      required: [true, "subCategory name is required"],
+      minLength: [2, "subCategory name is Too Short"],
+      maxLength: [32, "subCategory name is Too long"],
+      unique: [true, "subCategory name must be unique"],
     },
     slug: {
       type: String,
@@ -22,6 +22,8 @@ const subCategorySchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+subCategorySchema.methods.toString = () => "SubCategory";
 
 const SubCategory = mongoose.model("SubCategory", subCategorySchema);
 

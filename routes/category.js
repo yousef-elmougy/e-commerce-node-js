@@ -9,19 +9,19 @@ const {
 
 const {
   validateMongoId,
-  notEmpty,
+  required,
   lengthRange,
-} = require("../middleware/validatorMiddleware");
+} = require("../middleware/globalValidatorMiddleware");
 
-const subCategoryRouter =require("./subCategory");
+const subCategoryRouter = require("./subCategory");
 
 const router = express.Router();
 
-router.use("/:categoryId/subCategories",subCategoryRouter);
+router.use("/:categoryId/subCategories", subCategoryRouter);
 
 router
   .route("/")
-  .post([notEmpty("name"), lengthRange("name", 3, 32)], createCategory)
+  .post([required("name"), lengthRange("name", 3, 32)], createCategory)
   .get(getCategories);
 
 router.param("id", validateMongoId("id"));

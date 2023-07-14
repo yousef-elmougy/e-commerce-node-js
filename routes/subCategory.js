@@ -2,34 +2,34 @@ const express = require("express");
 
 const {
   validateMongoId,
-  notEmpty,
+  required,
   lengthRange,
-} = require("../middleware/validatorMiddleware");
+} = require("../middleware/globalValidatorMiddleware");
 const {
   createSubCategory,
   getSubCategories,
   getSubCategoryById,
   updateSubCategoryById,
   deleteSubCategoryById,
-  getSubCategoriesByCategoryId,
+} = require("../controllers/subCategory");
+const {
   createSubCategoryValidator,
   subCategoriesFilter,
-} = require("../controllers/subCategory");
+} = require("../utils/validations/subCategory");
 
 const router = express.Router({ mergeParams: true });
-
 
 router
   .route("/")
   .post(
     createSubCategoryValidator,
-    notEmpty("name"),
+    required("name"),
     lengthRange("name", 2, 32),
-    notEmpty("category"),
+    required("category"),
     validateMongoId("category"),
     createSubCategory
   )
-  .get(subCategoriesFilter,getSubCategories);
+  .get(subCategoriesFilter, getSubCategories);
 
 router.param("id", validateMongoId("id"));
 router
