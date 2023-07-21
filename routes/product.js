@@ -5,6 +5,8 @@ const {
   getProductById,
   updateProductById,
   deleteProductById,
+  resizeImage,
+  uploadMixOfProductImages,
 } = require("../controllers/product");
 
 const {
@@ -82,13 +84,21 @@ const createProductValidation = [
   isNumeric("ratingsQuantity"),
 ];
 
-router.route("/").post(createProductValidation, createProduct).get(getProducts);
+router
+  .route("/")
+  .post(
+    uploadMixOfProductImages,
+    resizeImage,
+    createProductValidation,
+    createProduct
+  )
+  .get(getProducts);
 
 router.param("id", validateMongoId("id"));
 router
   .route("/:id")
   .get(getProductById)
-  .put(updateProductById)
+  .put(uploadMixOfProductImages, resizeImage, updateProductById)
   .delete(deleteProductById);
 
 module.exports = router;

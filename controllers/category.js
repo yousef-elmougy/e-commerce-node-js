@@ -1,6 +1,36 @@
+const fs = require("fs");
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { v4: uuidv4 } = require("uuid");
+// eslint-disable-next-line import/no-extraneous-dependencies
+const sharp = require("sharp");
+
 const Category = require("../models/category");
 const factory = require("./handlersFactory");
+const { asyncHandler } = require("../utils/apiHelper");
+const { uploadSingleImage } =
+  require("../middleware/uploadImageMiddleware");
 
+exports.resizeImage = asyncHandler(async (req, res, next) => {
+  const uploadPath = "uploads/categories";
+  const filename = `category-${uuidv4()}-${Date.now()}.png`;
+
+  if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+  }
+
+  if (req.file) {
+    await sharp(req.file.buffer)
+      .resize(600, 600)
+      .toFormat("png")
+      .png({ quality: 90 })
+      .toFile(`${uploadPath}/${filename}`);
+    req.body.image = filename;
+  }
+  next();
+});
+
+exports.uploadCategoryImage = uploadSingleImage("image");
 // @desc     create category
 // @route    POST /api/v1/categories
 // @access   private

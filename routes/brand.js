@@ -5,6 +5,8 @@ const {
   getBrandById,
   updateBrandById,
   deleteBrandById,
+  uploadBrandImage,
+  resizeImage,
 } = require("../controllers/brand");
 
 const {
@@ -17,14 +19,20 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(required("name"), lengthRange("name", 3, 32), createBrand)
+  .post(
+    uploadBrandImage,
+    resizeImage,
+    required("name"),
+    lengthRange("name", 3, 32),
+    createBrand
+  )
   .get(getBrands);
 
 router.param("id", validateMongoId("id"));
 router
   .route("/:id")
   .get(getBrandById)
-  .put(updateBrandById)
+  .put(uploadBrandImage, resizeImage, updateBrandById)
   .delete(deleteBrandById);
 
 module.exports = router;

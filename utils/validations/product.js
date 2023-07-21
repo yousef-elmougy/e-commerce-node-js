@@ -13,7 +13,9 @@ const validatePriceAfterDiscount = (req, res, next) => {
 const categoryExist = async (req, res, next) => {
   const category = await Category.findById(req.body.category);
   if (!category) {
-    next(new ApiError(`Category not found for this ID: ${req.body.category}`,404))
+    next(
+      new ApiError(`Category not found for this ID: ${req.body.category}`, 404)
+    );
   }
   next();
 };
@@ -29,16 +31,20 @@ const categoryExist = async (req, res, next) => {
  */
 const subCategoryExist = async (req, res, next) => {
   const { subcategories } = req.body;
-  const subCategory = await SubCategory.find({
-    _id: { $exists: true, $in: subcategories },
-  });
+  if (subcategories) {
+    const subCategory = await SubCategory.find({
+      _id: { $exists: true, $in: subcategories },
+    });
 
-  const existingIds = subCategory.map((subCat) => subCat._id.toString());
-  const notFoundIds = subcategories.filter(
-    (subCategoryIds) => !existingIds.includes(subCategoryIds)
-  );
-  if (notFoundIds.length !== 0) {
-    next(new ApiError(`Subcategory not found for this ID: ${notFoundIds}`,404))
+    const existingIds = subCategory.map((subCat) => subCat._id.toString());
+    const notFoundIds = subcategories.filter(
+      (subCategoryIds) => !existingIds.includes(subCategoryIds)
+    );
+    if (notFoundIds.length !== 0) {
+      next(
+        new ApiError(`Subcategory not found for this ID: ${notFoundIds}`, 404)
+      );
+    }
   }
   next();
 };
@@ -56,17 +62,24 @@ const subCategoryExist = async (req, res, next) => {
  */
 const subCategoryBelongToCategory = async (req, res, next) => {
   const { subcategories, category } = req.body;
-  const subCategory = await SubCategory.find({
-    _id: { $in: subcategories },
-    category: { $in: category },
-  });
+  if (subcategories) {
+    const subCategory = await SubCategory.find({
+      _id: { $in: subcategories },
+      category: { $in: category },
+    });
 
-  const existingIds = subCategory.map((subCat) => subCat._id.toString());
-  const notFoundIds = subcategories.filter(
-    (subCategoryIds) => !existingIds.includes(subCategoryIds)
-  );
-  if (notFoundIds.length !== 0) {
-    next(new ApiError(`Subcategory: ${notFoundIds} not belong to this Category: ${category}`,404))
+    const existingIds = subCategory.map((subCat) => subCat._id.toString());
+    const notFoundIds = subcategories.filter(
+      (subCategoryIds) => !existingIds.includes(subCategoryIds)
+    );
+    if (notFoundIds.length !== 0) {
+      next(
+        new ApiError(
+          `Subcategory: ${notFoundIds} not belong to this Category: ${category}`,
+          404
+        )
+      );
+    }
   }
   next();
 };

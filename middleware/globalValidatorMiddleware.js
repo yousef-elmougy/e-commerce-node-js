@@ -52,8 +52,8 @@ const lengthRange = (paramName, minLength, maxLength) => (req, res, next) => {
 
 const isNumeric = (paramName) => (req, res, next) => {
   const paramValue = req.params[paramName] || req.body[paramName];
-  const floatValue = parseFloat(paramValue);
   if (paramValue) {
+    const floatValue = parseFloat(paramValue);
     if (Number.isNaN(floatValue) || paramValue === "") {
       next(new ApiError(`${paramName} must be Numeric`, 404));
     }
@@ -65,7 +65,7 @@ const isNumeric = (paramName) => (req, res, next) => {
 
 const isArray = (paramName) => (req, res, next) => {
   const paramValue = req.params[paramName] || req.body[paramName];
-  if (typeof paramValue !== "undefined" && !Array.isArray(paramValue)) {
+  if (paramValue && !Array.isArray(paramValue)) {
     next(new ApiError(`${paramName} must be an array`, 404));
   }
   next();
@@ -73,17 +73,19 @@ const isArray = (paramName) => (req, res, next) => {
 
 const duplicateIds = (paramName) => (req, res, next) => {
   const paramValue = req.params[paramName] || req.body[paramName];
+  if (paramValue) {
+    const duplicateId = paramValue.filter(
+      (subCategoryId, index) => paramValue.indexOf(subCategoryId) !== index
+    );
 
-  const duplicateId = paramValue.filter(
-    (subCategoryId, index) => paramValue.indexOf(subCategoryId) !== index
-  );
-
-  if (duplicateId.length > 0) {
-    next(new ApiError(`Duplicate ${paramName} ID: ${duplicateId}`, 404));
+    if (duplicateId.length > 0) {
+      return next(
+        new ApiError(`Duplicate ${paramName} ID: ${duplicateId}`, 404)
+      );
+    }
   }
   next();
 };
-
 module.exports = {
   validateMongoId,
   required,

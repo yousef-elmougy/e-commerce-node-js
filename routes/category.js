@@ -5,6 +5,8 @@ const {
   getCategoryById,
   updateCategoryById,
   deleteCategoryById,
+  uploadCategoryImage,
+  resizeImage,
 } = require("../controllers/category");
 
 const {
@@ -21,14 +23,20 @@ router.use("/:categoryId/subCategories", subCategoryRouter);
 
 router
   .route("/")
-  .post([required("name"), lengthRange("name", 3, 32)], createCategory)
+  .post(
+    uploadCategoryImage,
+    resizeImage,
+    required("name"),
+    lengthRange("name", 3, 32),
+    createCategory
+  )
   .get(getCategories);
 
 router.param("id", validateMongoId("id"));
 router
   .route("/:id")
   .get(getCategoryById)
-  .put(updateCategoryById)
+  .put(uploadCategoryImage, resizeImage, updateCategoryById)
   .delete(deleteCategoryById);
 
 module.exports = router;
