@@ -14,12 +14,15 @@ const {
   required,
   lengthRange,
 } = require("../middleware/globalValidatorMiddleware");
+const { allowedTo, auth } = require("../controllers/auth");
 
 const router = express.Router();
 
 router
   .route("/")
   .post(
+    auth,
+    allowedTo("admin", "superAdmin"),
     uploadBrandImage,
     resizeImage,
     required("name"),
@@ -32,7 +35,13 @@ router.param("id", validateMongoId("id"));
 router
   .route("/:id")
   .get(getBrandById)
-  .put(uploadBrandImage, resizeImage, updateBrandById)
-  .delete(deleteBrandById);
+  .put(
+    auth,
+    allowedTo("admin", "superAdmin"),
+    uploadBrandImage,
+    resizeImage,
+    updateBrandById
+  )
+  .delete(auth, allowedTo("superAdmin"), deleteBrandById);
 
 module.exports = router;

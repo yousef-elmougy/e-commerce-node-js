@@ -16,6 +16,7 @@ const {
 } = require("../middleware/globalValidatorMiddleware");
 
 const subCategoryRouter = require("./subCategory");
+const { auth, allowedTo } = require("../controllers/auth");
 
 const router = express.Router();
 
@@ -24,6 +25,8 @@ router.use("/:categoryId/subCategories", subCategoryRouter);
 router
   .route("/")
   .post(
+    auth,
+    allowedTo("admin", "superAdmin"),
     uploadCategoryImage,
     resizeImage,
     required("name"),
@@ -36,7 +39,13 @@ router.param("id", validateMongoId("id"));
 router
   .route("/:id")
   .get(getCategoryById)
-  .put(uploadCategoryImage, resizeImage, updateCategoryById)
-  .delete(deleteCategoryById);
+  .put(
+    auth,
+    allowedTo("admin", "superAdmin"),
+    uploadCategoryImage,
+    resizeImage,
+    updateCategoryById
+  )
+  .delete(auth, allowedTo("superAdmin"), deleteCategoryById);
 
 module.exports = router;

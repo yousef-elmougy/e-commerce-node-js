@@ -49,8 +49,8 @@ class ApiFeatures {
   }
 
   paginate(docsCount) {
-    const page = parseInt(this.query.page) || 1;
-    const limit = parseInt(this.query.limit) || 5;
+    const page = parseInt(this.query.page,10) || 1;
+    const limit = parseInt(this.query.limit,10) || 5;
     const skip = (page - 1) * limit;
     const endIndex = page * limit;
     const paginationResult = {};

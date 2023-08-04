@@ -24,6 +24,7 @@ const {
   subCategoryExist,
   subCategoryBelongToCategory,
 } = require("../utils/validations/product");
+const { allowedTo, auth } = require("../controllers/auth");
 
 const router = express.Router();
 
@@ -87,6 +88,8 @@ const createProductValidation = [
 router
   .route("/")
   .post(
+    auth,
+    allowedTo("admin", "superAdmin"),
     uploadMixOfProductImages,
     resizeImage,
     createProductValidation,
@@ -98,7 +101,13 @@ router.param("id", validateMongoId("id"));
 router
   .route("/:id")
   .get(getProductById)
-  .put(uploadMixOfProductImages, resizeImage, updateProductById)
-  .delete(deleteProductById);
+  .put(
+    auth,
+    allowedTo("admin", "superAdmin"),
+    uploadMixOfProductImages,
+    resizeImage,
+    updateProductById
+  )
+  .delete(auth, allowedTo("superAdmin"), deleteProductById);
 
 module.exports = router;

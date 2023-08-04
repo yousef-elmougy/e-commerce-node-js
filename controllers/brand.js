@@ -1,8 +1,6 @@
 const fs = require("fs");
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { v4: uuidv4 } = require("uuid");
-// eslint-disable-next-line import/no-extraneous-dependencies
 const sharp = require("sharp");
 
 const { uploadSingleImage } =

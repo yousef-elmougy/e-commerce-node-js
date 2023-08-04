@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 const multer = require("multer");
 const ApiError = require("../utils/apiError");
 
