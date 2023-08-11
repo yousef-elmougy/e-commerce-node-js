@@ -26,6 +26,8 @@ const {
 } = require("../utils/validations/product");
 const { allowedTo, auth } = require("../controllers/auth");
 
+const reviewRoute = require('./review')
+
 const router = express.Router();
 
 const createProductValidation = [
@@ -84,6 +86,8 @@ const createProductValidation = [
   // ratingsQuantity
   isNumeric("ratingsQuantity"),
 ];
+
+router.use("/:productId/reviews", reviewRoute);
 
 router
   .route("/")

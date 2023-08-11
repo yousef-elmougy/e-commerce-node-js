@@ -30,13 +30,28 @@ const userSchema = mongoose.Schema(
     passwordResetExpires: Date,
     role: {
       type: String,
-      enum: ["user", "admin","superAdmin"],
+      enum: ["user", "admin", "superAdmin"],
       default: "user",
     },
     active: {
       type: Boolean,
       default: true,
     },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+    address: [
+      {
+        alias: String,
+        details: String,
+        phone: String,
+        city: String,
+        postalCode: String,
+      },
+    ],
   },
   { timestamps: true }
 );

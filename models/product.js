@@ -66,8 +66,18 @@ const productSchema = mongoose.Schema(
       default: 0,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
+    toObject: { virtuals: true }, // So `console.log()` and other functions that use `toObject()` include virtuals
+  }
 );
+
+productSchema.virtual('reviews', {
+  ref: 'Review', // The model to use
+  localField: '_id', // Find people where `localField`
+  foreignField: 'product', // is equal to `foreignField`
+});
 
 productSchema.pre(/^find/, function () {
   this.populate({ path: "category", select: "name -_id" });

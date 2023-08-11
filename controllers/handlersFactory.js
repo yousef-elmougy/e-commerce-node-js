@@ -10,6 +10,12 @@ exports.deleteOne = (model) =>
       return next(
         new ApiError(`${model().toString()} not found for this id: ${id}`, 404)
       );
+    if (doc) {
+      if (model.modelName === "Review") {
+        const productId = doc.product;
+        await model.calcAverageRatingsAndQuantity(productId);
+      }
+    }
     res.status(200).json({ data: doc });
   });
 
@@ -30,20 +36,27 @@ exports.updateOne = (model) =>
       );
     }
 
+    await doc.save();
     res.status(200).json({ data: doc });
   });
 
 exports.createOne = (model) =>
   asyncHandler(async (req, res) => {
-    req.body.slug = slugify(req.body.name);
+    if (req.body.name) {
+      req.body.slug = slugify(req.body.name);
+    }
     const newDoc = await model.create(req.body);
     res.status(201).json({ data: newDoc });
   });
 
-exports.getOne = (model) =>
+exports.getOne = (model, population) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const doc = await model.findById(id);
+    let query = model.findById(id);
+    if (population) {
+      query = query.populate(population);
+    }
+    const doc = await query;
     if (!doc)
       return next(
         new ApiError(`${model().toString()} not found for this id: ${id}`, 404)

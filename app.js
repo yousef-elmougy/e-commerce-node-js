@@ -3,14 +3,9 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const dbConnection = require("./config/dbConnection");
-const categoryRouter = require("./routes/category");
-const subCategoryRouter = require("./routes/subCategory");
-const brandRouter = require("./routes/brand");
-const productRouter = require("./routes/product");
-const userRouter = require("./routes/user");
-const authRouter = require("./routes/auth");
 const ApiError = require("./utils/apiError");
 const globalError = require("./middleware/errorMiddleware");
+const mountedRoutes = require("./routes");
 
 const app = express();
 
@@ -22,12 +17,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "uploads")));
 
 // Routes
-app.use("/api/v1/categories", categoryRouter);
-app.use("/api/v1/subCategories", subCategoryRouter);
-app.use("/api/v1/brands", brandRouter);
-app.use("/api/v1/products", productRouter);
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/auth", authRouter);
+mountedRoutes(app)
 
 app.all("*", (req, res, next) =>
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400))

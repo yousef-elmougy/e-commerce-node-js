@@ -6,8 +6,9 @@ const sharp = require("sharp");
 const Category = require("../models/category");
 const factory = require("./handlersFactory");
 const { asyncHandler } = require("../utils/apiHelper");
-const { uploadSingleImage } =
-  require("../middleware/uploadImageMiddleware");
+const { uploadSingleImage } = require("../middleware/uploadImageMiddleware");
+const Product = require("../models/product");
+const ApiError = require("../utils/apiError");
 
 exports.resizeImage = asyncHandler(async (req, res, next) => {
   const uploadPath = "uploads/categories";
@@ -52,4 +53,13 @@ exports.updateCategoryById = factory.updateOne(Category);
 // @desc     Delete a specific category by ID
 // @route    DELETE /api/v1/categories/:id
 // @access   Private
-exports.deleteCategoryById = factory.deleteOne(Category);
+exports.deleteCategoryById =  asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const doc = await Category.findByIdAndDelete(id);
+  await Product.findOneAndDelete({ category: id });
+  if (!doc)
+    return next(
+      new ApiError(`Category not found for this id: ${id}`, 404)
+    );
+  res.status(200).json({ data: doc });
+});
