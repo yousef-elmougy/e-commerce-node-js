@@ -20,15 +20,15 @@ const categorySchema = mongoose.Schema(
 
 categorySchema.methods.toString = () => "Category";
 
-const setImageURL = (doc) => {
-  if (doc.image) {
-    const imageURL = `${process.env.BASE_URL}/categories/${doc.image}`;
-    doc.image = imageURL;
-  }
-};
+// const setImageURL = (doc) => {
+//   if (doc.image) {
+//     const imageURL = `${process.env.BASE_URL}/categories/${doc.image}`;
+//     doc.image = imageURL;
+//   }
+// };
 
-categorySchema.post("init", (doc) => setImageURL(doc));
-categorySchema.post("save", (doc) => setImageURL(doc));
+// categorySchema.post("init", (doc) => setImageURL(doc));
+// categorySchema.post("save", (doc) => setImageURL(doc));
 
 const Category = mongoose.model("Category", categorySchema);
 

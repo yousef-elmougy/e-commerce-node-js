@@ -1,6 +1,3 @@
-const fs = require("fs");
-
-const { v4: uuidv4 } = require("uuid");
 const sharp = require("sharp");
 
 const Category = require("../models/category");
@@ -9,24 +6,24 @@ const { asyncHandler } = require("../utils/apiHelper");
 const { uploadSingleImage } = require("../middleware/uploadImageMiddleware");
 const Product = require("../models/product");
 const ApiError = require("../utils/apiError");
+const uploadImage = require("../middleware/cloudinaryMiddleware");
 
 exports.resizeImage = asyncHandler(async (req, res, next) => {
-  const uploadPath = "uploads/categories";
-  const filename = `category-${uuidv4()}-${Date.now()}.png`;
-
-  if (!fs.existsSync(uploadPath)) {
-    fs.mkdirSync(uploadPath, { recursive: true });
+  if (!req.file) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No file uploaded" });
   }
 
-  if (req.file) {
-    await sharp(req.file.buffer)
-      .resize(600, 600)
-      .toFormat("png")
-      .png({ quality: 90 })
-      .toFile(`${uploadPath}/${filename}`);
-    req.body.image = filename;
-  }
-  next();
+  // Resize the image using sharp
+  const resizedBuffer = await sharp(req.file.buffer)
+    .resize(600, 600)
+    .toFormat("png")
+    .png({ quality: 90 })
+    .toBuffer();
+
+  const upload = uploadImage(req, res, next);
+  upload("categories", resizedBuffer);
 });
 
 exports.uploadCategoryImage = uploadSingleImage("image");
@@ -53,13 +50,11 @@ exports.updateCategoryById = factory.updateOne(Category);
 // @desc     Delete a specific category by ID
 // @route    DELETE /api/v1/categories/:id
 // @access   Private
-exports.deleteCategoryById =  asyncHandler(async (req, res, next) => {
+exports.deleteCategoryById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const doc = await Category.findByIdAndDelete(id);
   await Product.findOneAndDelete({ category: id });
   if (!doc)
-    return next(
-      new ApiError(`Category not found for this id: ${id}`, 404)
-    );
+    return next(new ApiError(`Category not found for this id: ${id}`, 404));
   res.status(200).json({ data: doc });
 });
